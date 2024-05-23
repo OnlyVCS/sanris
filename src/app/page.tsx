@@ -101,7 +101,7 @@ export default function Home() {
     <div className="min-h-screen">
       <div className="container mx-auto py-6">
         {/* <h1 className="text-6xl font-bold text-center mb-8 select-none">SANRiS</h1> */}
-        <Image className='mb-5' alt="Logo" src="./left_logo.svg" width={200} height={66.55414723226938} />
+        <Image className='mb-5' alt="Logo" src="/left_logo.png" width={200} height={66.55414723226938} />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="col-span-1 md:col-span-2 bg-gray-100 p-6 rounded-lg shadow-md">
             <LineGraph labels={
@@ -113,7 +113,7 @@ export default function Home() {
               })} />
           </div>
           <div className="p-4 rounded-lg shadow-md bg-[#1a6d77] text-[#fff]">
-            <h2 className="text-2xl font-bold mb-4 text-center">Clima Agora</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Clima Atual</h2>
             <div className="flex justify-center items-center mb-4">
               {/* <p className='text-center'>ÍCONE</p> */}
               <img className='bg-[#e4e4e4] rounded-lg mb-6' alt="Weather Logo" src={`https://openweathermap.org/img/wn/${icon}@2x.png`} width={70} height={70} />
