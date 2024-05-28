@@ -2,7 +2,7 @@
 import { LineGraph } from '@/components/Line';
 
 import { useEffect, useState } from 'react';
-import { db } from './firebaseConfig';
+import { db } from '../data/firebaseConfig';
 import { ref, onValue, orderByChild, startAt, query } from 'firebase/database';
 import Image from 'next/image';
 
@@ -15,12 +15,11 @@ export default function Home() {
 
   // useState<any[]>([])
 
-  // const api_url = 'https://api.openweathermap.org/data/3.0/onecall?lat=-23.5017&lon=-47.4581&units=metric&exclude=hourly,daily,minutely&appid=e3cfb29f929a920bc6cee653ad6c3142';
-  const api_url = 'https://api.openweathermap.org/data/2.5/weather?q=Sorocaba,br&APPID=e0c3e263c491040d9df1a529a4a1837a&units=metric&lang=pt_br';
+  // const api_url = 'https://api.openweathermap.org/data/3.0/onecall?lat=-23.5017&lon=-47.4581&units=metric&exclude=hourly,daily,minutely&appid=' + process.env.APP_ID_OPENWEATHER;
+  const api_url = `https://api.openweathermap.org/data/2.5/weather?q=Sorocaba,br&APPID=${process.env.NEXT_PUBLIC_APP_ID_OPENWEATHER}&units=metric&lang=pt_br`;
   fetch(api_url)
     .then((res) => res.json())
     .then((result) => {
-      console.log(result);
       setTemp(result.main.temp);
       setHumidity(result.main.humidity);
       setIcon(result.weather[0].icon);
@@ -39,8 +38,6 @@ export default function Home() {
 
   const [lastThirtyData, setLastThirtyData] = useState<any[]>([]);
   let thirtyDaysAverage = 0;
-
-  console.log(icon);
 
   useEffect(() => {
     const fetchData = async () => {

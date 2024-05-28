@@ -1,4 +1,10 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+// const nextConfig = {};
 
-export default nextConfig;
+// export default nextConfig;
+
+import 'dotenv/config';
+
+export default {
+  reactStrictMode: true,
+};
