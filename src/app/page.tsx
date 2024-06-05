@@ -12,6 +12,9 @@ export default function Home() {
   const [icon, setIcon] = useState("");
   const [rain, setRain] = useState("");
   const [description, setDescription] = useState("");
+  
+  let warning = 0;
+  let warningDist = 0;
 
   // useState<any[]>([])
 
@@ -38,6 +41,8 @@ export default function Home() {
 
   const [lastThirtyData, setLastThirtyData] = useState<any[]>([]);
   let thirtyDaysAverage = 0;
+
+  let totalAvarage = 0;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,12 +78,10 @@ export default function Home() {
 
     fetchData();
 
-    // Lembre-se de fazer a limpeza do listener ao desmontar o componente
     return () => {
-      // Limpeza do listener, se necessário
     };
-  }, []); // O segundo argumento vazio indica que o useEffect só será executado uma vez, equivalente ao componentDidMount
-
+  }, []);
+  
   for(let i=0; i<lastThreeData.length; i++){
     threeDaysAverage += lastThreeData[i].distance;
   }
@@ -94,10 +97,30 @@ export default function Home() {
   }
   thirtyDaysAverage = thirtyDaysAverage/lastThirtyData.length;
 
+  for(let i=0; i<data.length; i++){
+    totalAvarage += data[i].distance;
+  }
+  totalAvarage = totalAvarage/data.length;
+
+  if (lastThreeData.length > 0) {
+    if(lastThreeData[lastThreeData.length - 1].distance >= 105 &&
+      lastThreeData[lastThreeData.length - 1].distance < 127.5
+    )
+      {
+        warning = 1;
+        warningDist = lastThreeData[lastThreeData.length - 1].distance;
+      }
+    
+    else if(lastThreeData[lastThreeData.length - 1].distance >= 127.5)
+      {
+        warning = 2;
+        warningDist = lastThreeData[lastThreeData.length - 1].distance;
+      }
+  }
+
   return (
     <div className="min-h-screen">
       <div className="container mx-auto py-6">
-        {/* <h1 className="text-6xl font-bold text-center mb-8 select-none">SANRiS</h1> */}
         <Image className='mb-5' alt="Logo" src="./left_logo.svg" width={200} height={66.55414723226938} />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="col-span-1 md:col-span-2 bg-gray-100 p-6 rounded-lg shadow-md">
@@ -110,31 +133,52 @@ export default function Home() {
               })} />
           </div>
           <div className="p-4 rounded-lg shadow-md bg-[#1a6d77] text-[#fff]">
-            <h2 className="text-2xl font-bold mb-4 text-center">Clima Atual</h2>
-            <div className="flex justify-center items-center mb-4">
-              {/* <p className='text-center'>ÍCONE</p> */}
-              <img className='bg-[#e4e4e4] rounded-lg mb-6' alt="Weather Logo" src={`https://openweathermap.org/img/wn/${icon}@2x.png`} width={70} height={70} />
-              {/* <img alt="Weather Logo" src={`https://openweathermap.org/img/w/09d.png`} width={70} height={70} /> */}
+            <h2 className="text-2xl font-bold mb-2 text-center">Clima Atual</h2>
+            <div className="flex justify-center items-center mb-3">
+              <img className='rounded-lg' alt="Weather Logo" src={`https://openweathermap.org/img/wn/${icon}@2x.png`} width={80} height={80} />
             </div>
             <div className="text-center space-y-2">
-              <p className="text-lg mb-2">Temperatura: {temp ? temp : <>Carregando...</>}ºC</p>
-              <p className="text-lg mb-2">Umidade: {humidity ? humidity : <>Carregando...</>}</p>
-              <p className="text-lg mb-2">Previsão de chuva pro dia: {rain ? rain : 0}mm</p>
-              <p className="text-lg capitalize mb-2">Descrição: {description ? description : <>Carregando...</>}.</p>
+              <p className="text-lg ">Temperatura: {temp ? temp : <>Carregando...</>}ºC</p>
+              <p className="text-lg ">Umidade: {humidity ? humidity : <>Carregando...</>}</p>
+              <p className="text-lg ">Chuva para próxima hora: {rain ? rain : 0}mm</p>
+              <p className="text-lg capitalize ">Descrição: {description ? description : <>Carregando...</>}.</p>
               <p className="text-medium">{new Date().toLocaleDateString('pt-br')}</p>
+
+              <div>
+                <h2 className="text-2xl font-bold mt-10 mb-2 text-center">ALERTAS</h2>
+                {warning === 2 ? (
+                      <div className="mt-4 p-2 rounded bg-red-500 text-xl text-center text-white font-bold">
+                        Perigo: Água atingiu níveis perigosos!
+                      </div>
+                    ) : warning === 1 ? (
+                      <div className="mt-4 p-2 rounded bg-yellow-500 text-xl text-center text-white font-bold">
+                        Aviso: Altura da água ficando perigosa!
+                      </div>
+                    ) : (
+                      <div className="mt-4 p-2 rounded bg-green-500 text-xl text-center text-white font-bold">
+                        Sem alertas no momento...
+                      </div>
+                    )
+                }
+                
+              </div>
+              
             </div>
           </div>
           <div className="p-4 rounded-lg shadow-md bg-[#1a6d77] text-[#fff]">
             <h2 className="text-2xl font-bold text-center">Quadro de Medições</h2>
             <p className='opacity-90 select-none text-sm mt-1'>Média das últimas medidas feitas pelo sensor:</p>
             <div className="bg-[#e4e4e4] p-2 rounded-md text-[#000] mb-2 mt-4">
-              <span className='mt-3 text-lg'>3 dias: {threeDaysAverage.toFixed(2)}mm</span>
+              <span className='mt-3 text-lg'>3 dias: {threeDaysAverage ? threeDaysAverage.toFixed(2) + 'mm': "sem dados"}</span>
             </div>
             <div className="bg-[#e4e4e4] p-2 rounded-md text-[#000] mb-2 mt-4">
-              <span className='mt-3 text-lg'>7 dias: {sevenDaysAverage.toFixed(2)}mm</span>
+              <span className='mt-3 text-lg'>7 dias: {sevenDaysAverage ? sevenDaysAverage.toFixed(2) + 'mm': "sem dados"}</span>
             </div>
             <div className="bg-[#e4e4e4] p-2 rounded-md text-[#000] mb-2 mt-4">
-              <span className='mt-3 text-lg'>30 dias: {thirtyDaysAverage.toFixed(2)}mm</span>
+              <span className='mt-3 text-lg'>30 dias: {thirtyDaysAverage ? thirtyDaysAverage.toFixed(2) + 'mm': "sem dados"}</span>
+            </div>
+            <div className="bg-[#e4e4e4] p-2 rounded-md text-[#000] mb-2 mt-4">
+              <span className='mt-3 text-lg'>Total: {totalAvarage ? totalAvarage.toFixed(2) + 'mm': "sem dados"}</span>
             </div>
           </div>
           <div className="p-4 rounded-lg shadow-md bg-[#1a6d77] text-[#fff]">
